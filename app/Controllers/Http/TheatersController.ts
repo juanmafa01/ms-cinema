@@ -2,11 +2,25 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Theater from 'App/Models/Theater';
 
 export default class TheatersController {
-    public async find({ request }:HttpContextContract){
-        const page = request.input('page', 1);
-        const perPage = request.input("per_page", 20);
-        let theaters:Theater[]=await Theater.query().preload('projector').paginate(page, perPage)
-        return theaters;
+    public async find({ request, params }: HttpContextContract) {
+        if (params.id) {
+            let theTheater=await Theater.findOrFail(params.id);
+            //Cargar la relación
+            await theTheater.load("projector")
+            await theTheater.load("seats")
+            return theTheater;
+        } else {
+            const data = request.all()
+            if ("page" in data && "per_page" in data) {
+                const page = request.input('page', 1);
+                const perPage = request.input("per_page", 20);
+                return await Theater.query().paginate(page, perPage)
+            } else {
+                return await Theater.query()
+            }
+
+        }
+
     }
 
     public async show({ params }: HttpContextContract){
@@ -29,7 +43,16 @@ export default class TheatersController {
 
     public async delete({params,response}:HttpContextContract) {
         const theTheater:Theater=await Theater.findOrFail(params.id);
+        await theTheater.load("projector")
+        if(theTheater.projector){
+            response.status(400);
+            return{
+                "message":"No se puede eliminar porque tiene un proyector"
+            }
+        }else{
             response.status(204);
             return theTheater.delete();
+        }
+            
     }
 }

@@ -3,19 +3,24 @@ import Seat from 'App/Models/Seat';
 
 export default class SeatsController {
     //create
-    public async find({request,params}:HttpContextContract){
-        if(params.id){
-            return Seat.findOrFail(params.id);
-        }else{
+    public async find({ request, params }: HttpContextContract) {
+        if (params.id) {
+            let theSeat:Seat=await Seat.findOrFail(params.id);
+            //Cargar la relación
+            await theSeat.load("theater")
+            return theSeat;
+        } else {
             const data = request.all()
-            if("page" in data && "per_page" in data){
+            if ("page" in data && "per_page" in data) {
                 const page = request.input('page', 1);
-                const perPage = request.input("per_page",20);
+                const perPage = request.input("per_page", 20);
                 return await Seat.query().paginate(page, perPage)
-            }else{
+            } else {
                 return await Seat.query()
             }
+
         }
+
     }
     //Get por un id
     public async show({params}:HttpContextContract){

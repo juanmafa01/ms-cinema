@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
+import Theater from './Theater'
 
 export default class Projector extends BaseModel {
   @column({ isPrimary: true })
@@ -22,4 +23,9 @@ export default class Projector extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
+
+  @belongsTo(() => Theater,{
+    foreignKey: 'theater_id',
+  })
+  public theater: BelongsTo<typeof Theater>
 }

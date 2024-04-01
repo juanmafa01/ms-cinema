@@ -10,7 +10,7 @@ export default class extends BaseSchema {
       table.string('brand',60).notNullable()
       table.integer('high').notNullable()
       table.integer('width').notNullable()
-      table.integer('theater_id').unsigned().references('theaters.id').onDelete('CASCADE')
+      table.integer('theater_id').unsigned().references('theaters.id')
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })
     })

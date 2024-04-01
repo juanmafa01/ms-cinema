@@ -3,20 +3,21 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Projector from "App/Models/Projector";
 
 export default class ProjectorsController {
-     //Get
-     public async find({request,params}:HttpContextContract){
-        if(params.id){
-            return Projector.findOrFail(params.id);
-        }else{
+    public async find({ request, params }: HttpContextContract) {
+        if (params.id) {
+            return await Projector.findOrFail(params.id);
+        } else {
             const data = request.all()
-            if("page" in data && "per_page" in data){
+            if ("page" in data && "per_page" in data) {
                 const page = request.input('page', 1);
-                const perPage = request.input("per_page",20);
-                return await Projector.query().paginate(page, perPage)
-            }else{
-                return await Projector.query()
+                const perPage = request.input("per_page", 20);
+                return await Projector.query().preload("theater").paginate(page, perPage)
+            } else {
+                return await Projector.query().preload("theater")
             }
+
         }
+
     }
     //Get por un id
     public async show({params}:HttpContextContract){
