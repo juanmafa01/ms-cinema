@@ -2,7 +2,7 @@ import { DateTime } from 'luxon'
 import { BaseModel, HasMany, HasOne, ManyToMany, column, hasMany, hasOne, manyToMany } from '@ioc:Adonis/Lucid/Orm'
 import Projector from './Projector'
 import Seat from './Seat'
-import Movie from './Movie'
+import Screening from './Screening'
 
 export default class Theater extends BaseModel {
   @column({ isPrimary: true })
@@ -30,11 +30,18 @@ export default class Theater extends BaseModel {
   })
   public seats: HasMany<typeof Seat>
 
-  @manyToMany(() => Movie, {
-    pivotTable: 'screenings',
-    pivotForeignKey: 'theater_id',
-    pivotRelatedForeignKey: 'movie_id',
-    pivotColumns: ['date']
+  @hasMany(() => Screening,{
+    foreignKey: 'theater_id'
   })
-  public movies: ManyToMany<typeof Movie>
+  public screenings: HasMany<typeof Screening>
+
+  // @manyToMany(() => Movie, {
+  //   pivotTable: 'screenings',
+  //   pivotForeignKey: 'theater_id',
+  //   pivotRelatedForeignKey: 'movie_id',
+  //   pivotColumns: ['date']
+  // })
+  // public movies: ManyToMany<typeof Movie>
+
+
 }

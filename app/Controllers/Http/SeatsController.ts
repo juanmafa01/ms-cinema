@@ -1,5 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Seat from 'App/Models/Seat';
+import SeatValidator from 'App/Validators/SeatValidator';
 
 export default class SeatsController {
     //create
@@ -22,13 +23,14 @@ export default class SeatsController {
         }
 
     }
-    //Get por un id
-    public async show({params}:HttpContextContract){
-        return Seat.findOrFail(params.id);
-    }
+    // //Get por un id
+    // public async show({params}:HttpContextContract){
+    //     return Seat.findOrFail(params.id);
+    // }
     //create
-    public async store({request}:HttpContextContract){
-        const body=request.body();
+    public async create({request}:HttpContextContract){
+        //const body=request.body();
+        const body = await request.validate(SeatValidator)
         const theProjector=await Seat.create(body);
         return theProjector;
     }

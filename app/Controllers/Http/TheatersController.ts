@@ -1,5 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Theater from 'App/Models/Theater';
+import TheaterValidator from 'App/Validators/TheaterValidator';
 
 export default class TheatersController {
     public async find({ request, params }: HttpContextContract) {
@@ -8,7 +9,11 @@ export default class TheatersController {
             //Cargar la relación
             await theTheater.load("projector")
             await theTheater.load("seats")
-            return theTheater;
+            await theTheater.load("screenings",actualScreening=>{
+                actualScreening.preload("movie") //trae la informacion de la otra tabla en la relacion n a n
+            })
+            // await theTheater.load("screenings")
+             return theTheater;
         } else {
             const data = request.all()
             if ("page" in data && "per_page" in data) {
@@ -23,12 +28,13 @@ export default class TheatersController {
 
     }
 
-    public async show({ params }: HttpContextContract){
-        let theTheater: Theater = await Theater.query().where("id",params.id).preload('projector').preload('seats').preload('movies').firstOrFail();
-        return theTheater;
-    }
+    // public async show({ params }: HttpContextContract){
+    //     let theTheater: Theater = await Theater.query().where("id",params.id).preload('projector').preload('seats').preload('movies').firstOrFail();
+    //     return theTheater;
+    // }
     public async create({request}:HttpContextContract){
-        const body=request.body();
+        //const body=request.body();
+        const body = await request.validate(TheaterValidator)
         const theTheater:Theater=await Theater.create(body);
         return theTheater;
     }
