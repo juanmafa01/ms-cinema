@@ -7,4 +7,4 @@ Route.group(() => {
     Route.put("/movies/:id","MoviesController.update");
     Route.delete("/movies/:id","MoviesController.delete");
 
-})
+}).middleware(["security"])
